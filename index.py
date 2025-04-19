@@ -10,40 +10,56 @@ from threading import Thread
 class TodoListApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Voice-Enabled To-Do List")
-        self.root.geometry("400x500")
-        
-        # Initialize speech recognizer and text-to-speech engine
+        self.root.title("🎤 Voice-Enabled To-Do List")
+        self.root.geometry("420x700")
+        self.root.configure(bg="#f0f4f7")
+
         self.recognizer = sr.Recognizer()
         self.engine = pyttsx3.init()
         self.engine.setProperty('rate', 150)
-        
-        # Task list
+
         self.tasks = self.load_tasks()
-        
-        # GUI Components
-        self.task_listbox = tk.Listbox(root, height=15, width=40)
-        self.task_listbox.pack(pady=10)
-        
-        self.task_entry = tk.Entry(root, width=40)
-        self.task_entry.pack(pady=5)
-        
-        self.add_button = tk.Button(root, text="Add Task (Manual)", command=self.add_task_manual)
+
+        # Title Label
+        self.title_label = tk.Label(root, text="📝 My To-Do List", font=("Helvetica", 18, "bold"), bg="#f0f4f7", fg="#333")
+        self.title_label.pack(pady=(20, 10))
+
+        # Listbox Frame
+        listbox_frame = tk.Frame(root, bg="#ffffff", bd=2, relief="groove")
+        listbox_frame.pack(pady=10, padx=20, fill="both", expand=False)
+
+        self.task_listbox = tk.Listbox(listbox_frame, height=15, width=50, font=("Segoe UI", 11), bd=0, fg="#333", selectbackground="#c2f0c2")
+        self.task_listbox.pack(padx=10, pady=10)
+
+        # Entry Field
+        self.task_entry = tk.Entry(root, width=30, font=("Segoe UI", 11), fg="#333", bd=2, relief="groove")
+        self.task_entry.pack(pady=10)
+
+        # Button Styles
+        button_style = {
+            "font": ("Segoe UI", 10, "bold"),
+            "bg": "#4CAF50",
+            "fg": "white",
+            "activebackground": "#45a049",
+            "width": 25,
+            "bd": 0,
+            "cursor": "hand2",
+            "pady": 6
+        }
+
+        self.add_button = tk.Button(root, text="➕ Add Task (Manual)", command=self.add_task_manual, **button_style)
         self.add_button.pack(pady=5)
-        
-        self.remove_button = tk.Button(root, text="Remove Selected Task", command=self.remove_task_manual)
+
+        self.remove_button = tk.Button(root, text="🗑️ Remove Selected Task", command=self.remove_task_manual, **button_style)
         self.remove_button.pack(pady=5)
-        
-        self.clear_button = tk.Button(root, text="Clear All Tasks", command=self.clear_tasks)
+
+        self.clear_button = tk.Button(root, text="🧹 Clear All Tasks", command=self.clear_tasks, **button_style)
         self.clear_button.pack(pady=5)
-        
-        self.voice_button = tk.Button(root, text="Start Voice Input", command=self.start_voice_input)
-        self.voice_button.pack(pady=5)
-        
-        # Populate listbox with existing tasks
+
+        self.voice_button = tk.Button(root, text="🎙️ Start Voice Input", command=self.start_voice_input, **button_style)
+        self.voice_button.pack(pady=10)
+
         self.update_listbox()
-        
-        # Bind window close to save tasks
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
     
     def load_tasks(self):
